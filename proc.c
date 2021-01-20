@@ -330,15 +330,15 @@ wait(void)
 int
 getrpt(void){   // get total number of tickets for runnable processes
   struct proc *p;   // Per-process state
-  int runnig_process_tickets=0;
-//loop over process table and increment total tickets if a runnable process is found 
+  int total_process_tickets=0;
+//loop over process table and increment total tickets by runnable process tickets 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)  //You have access to the entire xv6 source presumably, which means that you can add a function in proc.c
   {						      //to iterate over this ptable and access the table to loop through and find running processes	
     if(p->state==RUNNABLE){
-      runnig_process_tickets+=p->tickets;  
+      total_process_tickets+=p->tickets;  
     }
   }
-  return runnig_process_tickets;          
+  return total_process_tickets;          
 }
 
 //PAGEBREAK: 42
@@ -366,47 +366,32 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
     
-	long count = 0;
-  	long win = 0;
+	  // define 2 vars one for total count of runnable process till reach the winner one , second to hold random nubmer ( winner ticket )
+	   long count = 0;
+  	   long win = 0;
 
-    
-    acquire(&ptable.lock);
-    win = random_at_most(getrpt());  //You will need to add a psuedorandom number generator to the kernel to get a random number between 1 and total_tickets
-                                        // xv6 does not support floating point, so you will need to do your random selection without floats or doubles.
+    // for concurrency issues
+    acquire(&ptable.lock);                 
+    win = random_at_most(getrpt());       //You will need to add a psuedorandom number generator to the kernel to get a random number between 1 and total_tickets
+                                          // xv6 does not support floating point, so you will need to do your random selection without floats or doubles.
 
 //When there are no runnable processes, your schduler should release the process table lock to give interrupts (like for keypresses) a chance to make programs    runnable, then reacquire that lock and iterate through the process table again.
    
 // Loop over process table looking for process to run.
  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE) {
-            continue;
-      }
-
-      count += p->tickets;    // sum of tickets of runnable process
-
-      if (count < win) {   // skip process which tickets less than the winner
-            continue;
-      }
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-
-      //The OS loads the process information to run it. After having loaded the process
-      // The process is marked running (p->state = RUNNING;) and the processor switches to execute it (swtch(&(c->scheduler), p->context);)
-      // When the process comes back to scheduler (so after the swtch) the kernel load its memory: switchkvm();
-
-      c->proc = p;
-      switchuvm(p);        
-      p->state = RUNNING; 
-                         
-      
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
-      p->ticks += 1;
-
-      
-
+     
+	 if(p->state == RUNNABLE)  count += p->tickets;  // sum of tickets of runnable process
+	 else continue;  // check next process
+         
+        if (count > win){   //  It is the chosen process job  / release ptable.lock / then reacquire it before jumping back to us.
+             c->proc = p;
+             switchuvm(p);     //The OS loads the process information to run it. After having loaded the process  
+             p->state = RUNNING; // The process is marked running
+             swtch(&(c->scheduler), p->context);   // the processor switches to execute it
+             switchkvm();     //  When the process comes back to scheduler (so after the swtch) the kernel load its memory
+             p->ticks += 1;   // increase no of times that processes has been chosen
+	}
+	 else continue;  // check next process
     }
     release(&ptable.lock);
   }
