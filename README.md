@@ -31,4 +31,5 @@ _This is our Operating systems course project we were assigned by our lecturer t
   choose a process to run based on the number of tickets it is assigned;
 
 - _`int getpinfo(struct pstat *).`This routine returns some information about all running processes, including how many times each has been chosen to run and the process ID of each. You can use this system call to build a variant of the command line program ps, which can then be called to see what is going on, you can test it by typing `tester 10 &; tester 20 &; tester 30 &; ps`as a command in the system this is a preview of the output:_
-![73631999-31d57200-4663-11ea-8cb8-25f1c62fe588](https://user-images.githubusercontent.com/47748059/105576102-2c43d100-5d79-11eb-841d-90a74532203c.png)
+![WhatsApp Image 2021-01-23 at 1 29 36 PM (1)](https://user-images.githubusercontent.com/47748059/105577284-3538a080-5d81-11eb-876c-e4fb88cc2415.jpeg)
+![WhatsApp Image 2021-01-23 at 1 29 36 PM](https://user-images.githubusercontent.com/47748059/105577286-38cc2780-5d81-11eb-9c06-101cb313c535.jpeg)
