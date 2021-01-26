@@ -6,9 +6,28 @@ We introduce to you three projects to the Unix version 6 operating system:
 ### 2. xv6 Virtual Memory
 ### 3. xv6 Kernel Threads
 
+## Getting Started with xv6:
 
-Let's go in some details <br/>
+Use git to clone the xv6 repository:</br>
+```
+$ git clone https://github.com/mit-pdos/xv6-public.git
+```
+Now go inside the xv6-public:</br>
+```
+$ cd xv6-public
+```
+Then run the xv6:
+```
+$ make clean
+```
+```
+$ make
+```
+```
+$ make qemu-nox
+```
 
+**Now let's discuss projects details** </br>
 
   ## 1. xv6 Lottery Scheduler
 
