@@ -48,9 +48,39 @@ bad:
   freevm(d);
   return 0;
 }
-
 ```
-__________________________________________________________________________________________________________________________________________________
+## test code
+```ruby
+#include "types.h"
+#include "stat.h"
+#include "user.h"
+
+int
+main(int argc, char *argv[])
+{
+   int ppid = getpid();
+
+   if (fork() == 0) {
+      uint * nullp = (uint*)0;
+      printf(1, "null dereference: ");
+      printf(1, "%x %x\n", nullp, *nullp);
+      // this process should be killed
+      printf(1, "TEST FAILED\n");
+      kill(ppid);
+      exit();
+   } else {
+      wait();
+   }
+
+   printf(1, "TEST PASSED\n");
+   exit();
+}
+```
+it is all about trying to access null pointer (trying to access the page number zero of the program)</br> 
+but because we make the program address space begins from the second page</br> 
+then it will not find the page and then it will trap (page fault)</br> 
+but because it is not exsit it will cause an error</br>
+___________________________________________________________________________________________________________________________________________
 # Read only code</br> 
 The main problem here is that in xv6 code is marked as readable and writeable so any program can overwrite its code</br>
 so we need to change the protection bits of some pages of the page table to make it read only and we should return it back to its original state To do this we need to make two system calls : 1) First one is int mprotect (void *addr, int len) to change the protection bits of the pages from that addr up to that addr plus that len to be read only
@@ -149,3 +179,48 @@ munprotect(void *addr, int len){
 • in munprotect () we make *pte = (*pte) | (PTE_W); </br>
 • we make bitwise or between this address and the value of PTE_W 0000 0000 0000 0010 then the address will be the same but its protection bit will be one so this address will be readable and writeable at the end we want to make the hardware know about these changes so we use the function lcr3() and pass the pysical address of the of the page dirctory of the current process and to convert it we use the function V2P();</br>
 • then return 0 indecating that the call is done successfully</br>
+## test code
+```ruby
+#include "types.h"
+#include "stat.h"
+#include "user.h"
+#include "mmu.h"
+int
+main(int argc, char *argv[])
+{
+  
+  char *start = sbrk(0);
+  sbrk(PGSIZE);
+  *start=100;
+  mprotect(start, 1) ;
+  int child=fork();
+  if(child==0){
+	printf(1, "protected value = %d\n",*start); 
+        munprotect(start, 1) ;  
+        *start=5;
+        printf(1, "After unprotecting the value became = %d\n",*start); 
+        exit();
+  }
+  else if(child>0){
+        wait();
+        printf(1, "\nWatch this,I'll trap now\n"); 
+        *start=5; 
+        printf(1, "\nThis statement will not be printed\n");
+        exit(); 
+  } 
+ exit();
+}
+``` 
+here it is all about trying to access the code segment </br>
+we will access a pointer which point to some location in the code segment</br>
+we write down 100 on it</br>
+then we call the mprotect system call</br>
+then we make a fork </br>
+and the parent will wait until the child process ends</br>
+and in the child process we will call munprotect</br>
+and try to access this pointer again writing down 5 on it</br>
+then the parent process will begin</br>
+but we do not make munprotect in it</br>
+then we try to access this pointer again</br>
+but because it is read only segment now </br>
+so it will trap and exit</br>
