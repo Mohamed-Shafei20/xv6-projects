@@ -1,14 +1,16 @@
   ## Project requirements
   
-**A.** Implement the clone() system call to create a kernel thread.
+**A.** Implement the `clone()` system call to create a kernel thread.
 
-**B.** Implement the join() system call to wait for a thread to exit then kill it.
+**B.** Implement the `join()` system call to wait for a thread to exit then kill it.
 
 **C.** Implement a simple turn lock to support multi-threading.  
 
-**D.** Build a little thread library to be on top of the raw system calls, with a create_thread(), join_thread(), init_lock(), acquire_lock(), and release_lock() functions to provide abstraction. 
+**D.** Build a little thread library to be on top of the raw system calls, with a `create_thread()`, `join_thread()`, `init_lock()`, `acquire_lock()`, and `release_lock()` functions to provide abstraction. 
 
   ## A. Building `clone()` system call To create a kernel thread.
+  
+`clone()` system call creates a new kernel thread which shares the calling process's address space.  It returns the thread PID to the parent and 0 to the child (if successful), -1 otherwise.
   
 ### 1. Implementation in`sysproc.c`file
 The wrapper function added in `sysproc.c` makes sure the user has provided the right number and type of arguments before passing the arguments to the actual system call.
@@ -86,10 +88,85 @@ user.h Add a function prototype for the system call: int clone(void(*fcn)(void*)
   
 defs.h Add a function prototype for the system call: int clone(void(*fcn)(void*), void *arg, void *stack);
 ```
-Now the clone system call is recognized by the operating system and can be called by user programs. 
+Now the clone system call is recognized by the operating system and can be called by user programs.
 
 
-  ## B. Building join() system call to wait for a thread to exit then kill it.
+  ## B. Building `join()` system call to wait for a thread to exit then kill it.
+
+`join()` system call will check the list of currently running processes, looking for a thread belonging to the parent process. If it finds such a process, and its state us ZOMBIE it will kill it (clear its entry in the process table), join returns -1 if no child thread is found, and will sleep if it finds a child thread that is still running.
+
+### 1. Implementation in`sysproc.c`file
+
+The wrapper function added in `sysproc.c` does the job of invoking `join()` system call.
+
+```c
+int sys_join(void)
+{
+	return join();
+}
+```
+
+### 2. Implementation in`proc.c`file
+
+The actual code of the `join()` system call added in `proc.c` file
+
+```c
+int join(void)
+{
+	struct proc *t;
+	int haveThreads, pid;
+	struct proc *curproc = myproc();
+	
+	acquire(&ptable.lock);
+	for(;;) 
+	{
+		haveThreads = 0;
+		for(t = ptable.proc; t < &ptable.proc[NPROC]; t++)
+		{
+
+		if((t->parent != curproc) || (t->parent->pgdir != curproc->pgdir) )
+				continue;
+	       haveThreads = 1;
+	       if(t->state == ZOMBIE) 
+	       {	
+			pid = t->pid;
+			kfree(t->kstack);
+			t->kstack = 0;
+			t->pid = 0;
+			t->parent = 0;
+			t->name[0] = 0;
+			t->killed = 0;
+			t->state = UNUSED;
+			release(&ptable.lock);
+
+			return pid;
+       }
+    }
+     if(!haveThreads || curproc->killed)
+     {
+       release(&ptable.lock);
+       return -1;
+     }
+     sleep(curproc, &ptable.lock);
+   }
+}
+```
+### 3. System call glue
+Now we have the implementation of the join system call, we need to glue it in to the rest of the operating system. To do this we will need to make changes to the following files:
+```c
+syscall.h : #define SYS_join  23
+
+syscall.c :
+	1- Add an extern definition: extern int sys_join(void);
+	2- add an entry to the table: [SYS_join]   sys_join,
+
+usys.S Add an entry for join: SYSCALL(join)
+                              
+user.h Add a function prototype for the system call: int join(void);
+  
+defs.h Add a function prototype for the system call: int join(void);
+```
+Now the clone system call is recognized by the operating system and can be called by user programs.
 
 
   ## C. Building a simple turn lock to support multi-threaded programs.
