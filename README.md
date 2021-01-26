@@ -49,11 +49,11 @@ This is our Operating systems course project we were assigned by our lecturer to
  ## 2. xv6 Virtual Memory
  
 ### Null pointer dereference
- 	The main problem here is that in xv6, the VM system uses a simple two-level page table as discussed in class. As it currently is structured, user code is loaded into the very first part of the address space. Thus, if you dereference a null pointer, you will not see an exception (as you might expect); rather, you will see whatever code is the first bit of code in the program that is running.
+ The main problem here is that in xv6, the VM system uses a simple two-level page table as discussed in class. As it currently is structured, user code is loaded into the very first part of the address space. Thus, if you dereference a null pointer, you will not see an exception (as you might expect); rather, you will see whatever code is the first bit of code in the program that is running.
 	So the solution is to shift the paging by one page so when a program is been loaded in the memory, it loaded into the memory from the second page not from the address zero , when null pointer is defined it will try to access an invalid address so the program will trap and get error and then the process will be killed .
 	
 ### Read only code
-	The main problem here is that in xv6 code is marked as readable and writeable so any program can overwrite its code so we need to change the protection bits of some pages of the page table to make it read only and we should to return it back to its original state
+The main problem here is that in xv6 code is marked as readable and writeable so any program can overwrite its code so we need to change the protection bits of some pages of the page table to make it read only and we should to return it back to its original state
 To do this we need to make two system calls : 
     1) First one is int mprotect (void *addr, int len) to change the protection bits of the pages from that 
        addr up to that addr plus that len to be read only    
