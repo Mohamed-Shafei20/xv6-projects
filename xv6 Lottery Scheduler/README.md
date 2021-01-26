@@ -295,5 +295,5 @@ int main(int argc, char* argv[]){
 }
 ```
 
-You can test fork() by type command 'testfor 10&;ps' 
+You can test `fork()` by type command `testfor 10&;ps` 
 ![WhatsApp Image 2021-01-26 at 4 38 36 PM](https://user-images.githubusercontent.com/47748059/105862894-f90f7500-5ff8-11eb-8af4-182b2c8ff642.jpeg)
