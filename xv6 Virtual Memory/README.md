@@ -3,18 +3,18 @@ The main problem here is that in xv6, the VM system uses a simple two-level page
 </br>
 ### The change to do this paging shift : </br>
 • To force the program to be loaded into the memory from the second page we change in Makefile </br>
-```
+```ruby
 #### $ (LD) $ (LDFLAGS) −N −e main −Ttext 0 x1000 −o $@ $ </br>
 ```
 • Then we change the exec.c which have the variable SZ which indicates the beginning of the program memory so we need to change this variable to 4096(PGSIZE) to make the program to be loaded from the second page </br>
-```
+```ruby
 Load program into memory.
 sz = PGSIZE;
 for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
      if(readi(ip, (char*)&ph, off, sizeof(ph)) != sizeof(ph))
 ```
 • And to make the same changes when a fork occurs we need to make changes in vm.c to the function copyuvm() to make the child process copy the address space of the parent process from the second page</br>
-```
+```ruby
 // Given a parent process's page table, create a copy
 // of it for a child.
 pde_t*
@@ -58,7 +58,7 @@ so we need to change the protection bits of some pages of the page table to make
 </br>
 #### To make these two system calls we need some definitions in some files</br>
 #### but the main files is vm.c we need to add the two main functions in it</br>
-```
+```ruby
 //mprotect system call makes page table entries only readable, non-writable
 int
 mprotect(void *addr, int len){
@@ -100,7 +100,7 @@ return 0;
 }
 ```
 ####  _________________________________________________________
-```
+```ruby
 //mprotect system call makes page table entries both readable and writable
 int
 munprotect(void *addr, int len){
