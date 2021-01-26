@@ -277,6 +277,5 @@ If you have followed the previous instructions precisely,
 #### The following output after you run the jointest program:
 ![jointest](https://user-images.githubusercontent.com/61950372/105896877-14da4180-6020-11eb-99f8-c8f35e085fee.png)
 #### The following output after you run the kthreads program:
-![kthreads](https://user-images.githubusercontent.com/61950372/105896900-1dcb1300-6020-11eb-9e9d-ca280a861e55.png)
-  
+![kthreads](https://user-images.githubusercontent.com/61950372/105897303-a944a400-6020-11eb-886b-f413c6fe3677.png)  
 
