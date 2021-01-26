@@ -1,3 +1,17 @@
+# **xv6 projects**
+
+We introduce to you three projects to the Unix version 6 operating system:
+
+### 1. xv6 Lottery Scheduler
+### 2. xv6 Virtual Memory
+### 3. xv6 Kernel Threads
+
+
+Let's go in some details <br/>
+
+
+  ## 1. xv6 Lottery Scheduler
+
 **Operating System XV6 (Unix version 6)**
 
 _This is our Operating systems course project we were assigned by our lecturer to modify UNIX version 6 to get a better sense of how an operating system works, We do implement a few projects inside a real OS kernel._
@@ -33,3 +47,34 @@ _This is our Operating systems course project we were assigned by our lecturer t
 - _`int getpinfo(struct pstat *).`This routine returns some information about all running processes, including how many times each has been chosen to run and the process ID of each. You can use this system call to build a variant of the command line program ps, which can then be called to see what is going on, you can test it by typing `tester 10 &; tester 20 &; tester 30 &; ps`as a command in the system this is a preview of the output:_
 ![WhatsApp Image 2021-01-23 at 1 29 36 PM (1)](https://user-images.githubusercontent.com/47748059/105577284-3538a080-5d81-11eb-876c-e4fb88cc2415.jpeg)
 ![WhatsApp Image 2021-01-23 at 1 29 36 PM](https://user-images.githubusercontent.com/47748059/105577286-38cc2780-5d81-11eb-9c06-101cb313c535.jpeg)
+
+ ## 2. xv6 Virtual Memory
+
+
+ ## 3. xv6 Kernel Threads
+
+
+
+## Resources
+
+
+**Tools**
+
+
+**Resources**
+
+
+
+## **Team Members**
+
+Implementations of xv6 Lottery Scheduler by:
+- [Muhammad Salah](https://github.com/MohamedSalahApdElzaher)
+- [Mohamed Abd-El-Nasser](https://github.com/Mohamed-Abd-El-Nasser)
+
+Implementations of xv6 Virtual Memory by:
+- [Muhammad Adel Sharkawy](https://github.com/mohamed-el-sharkawy)
+- [Youseef Magdy](https://github.com/youssefmagdy1)
+
+Implementations of xv6 Kernel Threads by:
+- [Muhammad Mohie](https://github.com/muhammadmohie98)
+
