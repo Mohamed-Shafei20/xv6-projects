@@ -294,3 +294,4 @@ int main(int argc, char* argv[]){
 You can use this system call to build a variant of the command line program ps, which can then be called to see what is going on, you can test it by typing `tester 10 &; tester 20 &; tester 30 &; ps`as a command in the system this is a preview of the output:
 ![WhatsApp Image 2021-01-23 at 1 29 36 PM (1)](https://user-images.githubusercontent.com/47748059/105577284-3538a080-5d81-11eb-876c-e4fb88cc2415.jpeg)
 ![WhatsApp Image 2021-01-23 at 1 29 36 PM](https://user-images.githubusercontent.com/47748059/105577286-38cc2780-5d81-11eb-9c06-101cb313c535.jpeg)
+![WhatsApp Image 2021-01-26 at 4 38 36 PM](https://user-images.githubusercontent.com/47748059/105862894-f90f7500-5ff8-11eb-8af4-182b2c8ff642.jpeg)
