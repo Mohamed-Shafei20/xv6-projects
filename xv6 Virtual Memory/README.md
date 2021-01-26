@@ -3,7 +3,9 @@ The main problem here is that in xv6, the VM system uses a simple two-level page
 </br>
 ### The change to do this paging shift : </br>
 • To force the program to be loaded into the memory from the second page we change in Makefile </br>
+```
 #### $ (LD) $ (LDFLAGS) −N −e main −Ttext 0 x1000 −o $@ $ </br>
+```
 • Then we change the exec.c which have the variable SZ which indicates the beginning of the program memory so we need to change this variable to 4096(PGSIZE) to make the program to be loaded from the second page </br>
 ```
 Load program into memory.
