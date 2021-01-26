@@ -225,4 +225,4 @@ but we do not make munprotect in it</br>
 then we try to access this pointer again</br>
 but because it is read only segment now </br>
 so it will trap and exit</br>
-![alt tag](https://user-images.githubusercontent.com/47748922/105889838-4bf82500-6017-11eb-996d-817a6e769b57.png)
+![alt tag](https://user-images.githubusercontent.com/47748922/105906435-5ffa5180-602c-11eb-939d-1cca4c6b02eb.png)
