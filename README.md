@@ -111,15 +111,16 @@ The explanation of these functions:
 
 
  ## 3. xv6 Kernel Threads
+### Project requirements:
 In this project, you'll be adding kernel threads support to xv6, to achieve this we must do the following implementations:
 
-**1-** Implement the clone() system call to create a kernel thread.
+**1-** Implement `clone()` system call should look like this: `int clone(void(*fcn)(void *), void *arg, void *stack)` to create a new kernel thread which shares the calling process's address space, the new thread also uses stack as its parent stack. The stack should be one page in size and page-aligned. The new thread starts executing at the address specified by fcn. As with fork(). It It returns the thread PID to the parent and 0 to the child (if successful), -1 otherwise.
 
-**2-** Implement the join() system call to wait for a thread to exit then kill it.
+**2-** Implement join() system call should look like this: `int join(void **stack)` to wait for a child thread that shares the address space with the calling process to exit then kill it.
 
-**3-** Implement a simple turn lock to support multi-threading.  
+**3-** Implement a simple turn lock to support multi-threaded programs. There should be a type turnlock that one used to declare a lock, and three routines: `void init_lock(turnlock *)`, `void acquire_lock(turnlock *tlock)`, and `void release_lock(turnlock *tlock)` which initialize, acquire and release the lock. The turn lock should use the xchg atomic add to avoid concurrency bugs.
 
-**4-** Build a little thread library to be on top of the raw system calls, with a create_thread(), join_thread(), init_lock(), acquire_lock(), and release_lock() functions to provide abstraction. 
+**4-** Build a little thread library to be on top of these raw system calls, with a create_thread(), join_thread(), init_lock(), acquire_lock(), and release_lock() functions to provide abstraction to user. 
 
 ## Resources
 
