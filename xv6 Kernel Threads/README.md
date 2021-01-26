@@ -273,14 +273,10 @@ To run a test program, start xv6 (as described previously) and run clonetest fro
 If you have followed the previous instructions precisely,
 
 #### The following output after you run the clonetest program:
-![clonetest]()
-
+![clonetest](https://user-images.githubusercontent.com/61950372/105896849-08ee7f80-6020-11eb-96a5-80fbcb2a4ccc.png)
 #### The following output after you run the jointest program:
-![jointest]()
-
+![jointest](https://user-images.githubusercontent.com/61950372/105896877-14da4180-6020-11eb-99f8-c8f35e085fee.png)
 #### The following output after you run the kthreads program:
-
-![kthreads]()
-
+![kthreads](https://user-images.githubusercontent.com/61950372/105896900-1dcb1300-6020-11eb-9e9d-ca280a861e55.png)
   
 
