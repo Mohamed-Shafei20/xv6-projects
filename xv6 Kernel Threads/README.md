@@ -1,4 +1,4 @@
-  ## Project requirements
+  ## Project requirements briefly
   
 **A.** Building the `clone()` system call to create a kernel thread.
 
@@ -229,4 +229,58 @@ void release_lock(struct turnlock *xlock)
   ```
   
   ## E. Testing.
+  
+In order to test your work:
+
+**1.** Add the test files inside xv6: `clonetest.c`, `jointest.c` and `kthreads.c`.</br>
+**2.** Find the line `EXTRA=\` inside the `Makefile`, and add `clonetest.c`, `jointest.c` and `kthreads.c` to the list of files:
+```c
+EXTRA=\
+	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
+	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
+	printf.c umalloc.c\
+	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
+	.gdbinit.tmpl gdbutil\
+	clonetest.c\
+	jointest.c\
+	kthreads.c\
+```
+
+Then find the line UPROGS=\ inside the `Makefile`. Add your file in the same format as the other entries:
+```c
+UPROGS=\
+	_cat\
+	_echo\
+	_forktest\
+	_grep\
+	_init\
+	_kill\
+	_ln\
+	_ls\
+	_mkdir\
+	_rm\
+	_sh\
+	_stressfs\
+	_usertests\
+	_wc\
+	_zombie\
+	_clonetest\
+	_jointest\
+	_kthreads\
+  ```
+To run a test program, start xv6 (as described previously) and run clonetest from the command line in the running xv6 kernel.
+
+If you have followed the previous instructions precisely,
+
+#### The following output after you run the clonetest program:
+![clonetest]()
+
+#### The following output after you run the jointest program:
+![jointest]()
+
+#### The following output after you run the kthreads program:
+
+![kthreads]()
+
+  
 
