@@ -1,6 +1,4 @@
-1. **Add System call--Settickets(int tickets)** `proc.c file`
-
-- _Here are the code modified in xv6:_
+- _**Here are the code modified in xv6:**_
 - _First, Support the process in `proc.h` with tickets & tickes properties_
 ```
 struct proc {
