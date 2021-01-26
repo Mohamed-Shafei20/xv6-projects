@@ -4,30 +4,34 @@ We introduce to you three projects to the Unix version 6 operating system:
 
 ### 1. xv6 Lottery Scheduler
 ### 2. xv6 Virtual Memory
-### 3. xv6 Kernel Threads
+### 3. xv6 Kernel Threads 
+
+<br/>
 
 ## Getting Started with xv6:
 
-Use git to clone the xv6 repository:</br>
+Use git to clone the xv6 repository:
 ```
-$ git clone https://github.com/mit-pdos/xv6-public.git
+$ git clone https://github.com/mit-pdos/xv6-public
 ```
-Now go inside the xv6-public:</br>
+Now go inside the xv6-public:
 ```
 $ cd xv6-public
+```
+Install qemu emulator:
+```
+$ sudo apt-get install qemu
 ```
 Then run the xv6:
 ```
 $ make clean
-```
-```
 $ make
-```
-```
 $ make qemu-nox
 ```
+To quit qemu emulation, type ctrl + a then x (that is, hold down control and while doing so, press a, then let go of control, then press x).
 
-**Now let's discuss projects details** </br>
+Now let's discuss projects details
+<br/>
 
   ## 1. xv6 Lottery Scheduler
 
