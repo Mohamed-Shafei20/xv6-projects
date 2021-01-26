@@ -44,9 +44,7 @@ This is our Operating systems course project we were assigned by our lecturer to
   changing the scheduler in `proc.c` to use the number of tickets to randomly 
   choose a process to run based on the number of tickets it is assigned;
 
-- `int getpinfo(struct pstat *).`This routine returns some information about all running processes, including how many times each has been chosen to run and the process ID of each. You can use this system call to build a variant of the command line program ps, which can then be called to see what is going on, you can test it by typing `tester 10 &; tester 20 &; tester 30 &; ps`as a command in the system this is a preview of the output:
-![WhatsApp Image 2021-01-23 at 1 29 36 PM (1)](https://user-images.githubusercontent.com/47748059/105577284-3538a080-5d81-11eb-876c-e4fb88cc2415.jpeg)
-![WhatsApp Image 2021-01-23 at 1 29 36 PM](https://user-images.githubusercontent.com/47748059/105577286-38cc2780-5d81-11eb-9c06-101cb313c535.jpeg)
+- `int getpinfo(struct pstat *).`This routine returns some information about all running processes, including how many times each has been chosen to run and the process ID of each.
 
  ## 2. xv6 Virtual Memory
  
