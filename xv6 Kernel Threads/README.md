@@ -1,12 +1,15 @@
   ## Project requirements
   
-**A.** Implement the `clone()` system call to create a kernel thread.
+**A.** Building the `clone()` system call to create a kernel thread.
 
-**B.** Implement the `join()` system call to wait for a thread to exit then kill it.
+**B.** Building the `join()` system call to wait for a thread to exit then kill it.
 
-**C.** Implement a simple turn lock to support multi-threading.  
+**C.** Building a simple turn lock to support multi-threading.  
 
 **D.** Build a little thread library to be on top of the raw system calls, with a `create_thread()`, `join_thread()`, `init_lock()`, `acquire_lock()`, and `release_lock()` functions to provide abstraction. 
+
+**E.** Testing.
+
 
   ## A. Building `clone()` system call To create a kernel thread.
   
@@ -169,6 +172,61 @@ defs.h Add a function prototype for the system call: int join(void);
 Now the clone system call is recognized by the operating system and can be called by user programs.
 
 
-  ## C. Building a simple turn lock to support multi-threaded programs.
+  ## C. Building a simple `turn lock` to support multi-threaded programs.
+  
+### Implementation in`user.h`file
+
+```c
+typedef struct turnlock
+{
+	uint flag;
+} turnlock;  
+```
 
   ## D. Building a little thread library to be on top of the raw system calls.
+  
+The thread library should be available as part of every program that runs in xv6. Thus, you should add prototypes to `user.h` and the actual code to implement the library routines in `ulib.c`. 
+
+### 1. Implementation in`user.h`file
+
+```c
+int create_kThread(void (*fnc)(void *), void *arg);	 
+int join_kThread(void);
+
+void init_lock(struct ticketlock *tlock);
+void acquire_lock(struct ticketlock *tlock);
+void release_lock(struct ticketlock *tlock);
+```
+
+### 2. Implementation in`ulib.c`file
+
+```c
+int create_kthread(void (*fnc)(void *), void *arg)
+{
+	char *stack = sbrk(PGSIZE);
+	return clone(fnc,arg,stack);	
+} 
+
+int join_kthread(void)
+{
+    	return join();
+}
+
+void init_lock(struct turnlock *xlock)
+{
+	xlock->flag = 0;
+}
+
+void acquire_lock(struct turnlock *xlock)
+{
+	while(xchg(&xlock->flag, 1) != 0);
+}
+
+void release_lock(struct turnlock *xlock)
+{
+	xchg(&xlock->flag, 0);
+}
+  ```
+  
+  ## E. Testing.
+
