@@ -4,50 +4,50 @@ The main problem here is that in xv6, the VM system uses a simple two-level page
 ### The change to do this paging shift : </br>
 • To force the program to be loaded into the memory from the second page we change in Makefile </br>
 #### $ (LD) $ (LDFLAGS) −N −e main −Ttext 0 x1000 −o $@ $ </br>
-• Then we change the exec.c which have the variable SZ which indicates the beginning of the program memory so we need to change this variable to 4096(PGSIZE) to make the program to be loaded from the second page 
-</br>
-• // Load program into memory.</br>
-####  sz = PGSIZE;</br>
-####  for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){</br>
-####      if(readi(ip, (char*)&ph, off, sizeof(ph)) != sizeof(ph))</br>
-
+• Then we change the exec.c which have the variable SZ which indicates the beginning of the program memory so we need to change this variable to 4096(PGSIZE) to make the program to be loaded from the second page </br>
+```
+Load program into memory.
+sz = PGSIZE;
+for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
+     if(readi(ip, (char*)&ph, off, sizeof(ph)) != sizeof(ph))
+```
 • And to make the same changes when a fork occurs we need to make changes in vm.c to the function copyuvm() to make the child process copy the address space of the parent process from the second page</br>
+```
+// Given a parent process's page table, create a copy
+// of it for a child.
+pde_t*
+copyuvm(pde_t *pgdir, uint sz)
+{
+  pde_t *d;
+  pte_t *pte;
+  uint pa, i, flags;
+  char *mem;
 
-#### // Given a parent process's page table, create a copy</br>
-#### 
+  if((d = setupkvm()) == 0)
+    return 0;
+  for(i = PGSIZE; i < sz; i += PGSIZE){
+    if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
+      panic("copyuvm: pte should exist");
+    if(!(*pte & PTE_P))
+      panic("copyuvm: page not present");
+    pa = PTE_ADDR(*pte);
+    flags = PTE_FLAGS(*pte);
+    if((mem = kalloc()) == 0)
+      goto bad;
+    memmove(mem, (char*)P2V(pa), PGSIZE);
+    if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0) {
+      kfree(mem);
+      goto bad;
+    }
+  }
+  return d;
 
-#### // of it for a child.</br>
-#### pde_t*</br>
-#### copyuvm(pde_t *pgdir, uint sz)</br>
-#### {</br>
-####   pde_t *d;</br>
-####   pte_t *pte;</br>
-####   uint pa, i, flags;</br>
-####   char *mem;</br>
-####   if((d = setupkvm()) == 0)</br>
-####     return 0;</br>
+bad:
+  freevm(d);
+  return 0;
+}
 
-####  for(i = PGSIZE; i < sz; i += PGSIZE){</br>
-####    if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)</br>
-####       panic("copyuvm: pte should exist");</br>
-####     if(!(*pte & PTE_P))</br>
-####       panic("copyuvm: page not present");</br>
-####     pa = PTE_ADDR(*pte);</br>
-####     flags = PTE_FLAGS(*pte);</br>
-####     if((mem = kalloc()) == 0)</br>
-####       goto bad;</br>
-####     memmove(mem, (char*)P2V(pa), PGSIZE);</br>
-####     if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0) {</br>
-####       kfree(mem);</br>
-####       goto bad;</br>
-####     }</br>
-####   }</br>
-####   return d;</br>
-#### bad:</br>
-####   freevm(d);</br>
-####   return 0;</br>
-#### }</br>
-
+```
 __________________________________________________________________________________________________________________________________________________
 # Read only code</br> 
 The main problem here is that in xv6 code is marked as readable and writeable so any program can overwrite its code</br>
@@ -56,86 +56,87 @@ so we need to change the protection bits of some pages of the page table to make
 </br>
 #### To make these two system calls we need some definitions in some files</br>
 #### but the main files is vm.c we need to add the two main functions in it</br>
-
-#### //mprotect system call makes page table entries only readable, non-writable</br>
-#### int</br>
-#### mprotect(void *addr, int len){</br>
-####   struct proc *curproc = myproc();</br>
+```
+//mprotect system call makes page table entries only readable, non-writable
+int
+mprotect(void *addr, int len){
+  struct proc *curproc = myproc();
   
-####   // cprintf("\ncurrent : 0x%p\n", curproc);</br>
+  // cprintf("\ncurrent : 0x%p\n", curproc);
 
-####   //Check if addr points to a region that is not currently a part of the address space</br>
-####   if(len <= 0 || (int)addr+len*PGSIZE>curproc->sz){</br>
-####     cprintf("\nwrong len\n");</br>
-####     return -1;</br>
-####   }</br>
-####   //Check if addr is not page aligned</br>
-####   if((int)(((int) addr) % PGSIZE )  != 0){</br>
-####     cprintf("\nwrong addr %p\n", addr);</br>
-####     return -1;</br>
-####   }  </br>
-####   //loop for each page</br>
-####   pte_t *pte;</br>
-####   int i;</br>
+  //Check if addr points to a region that is not currently a part of the address space
+  if(len <= 0 || (int)addr+len*PGSIZE>curproc->sz){
+    cprintf("\nwrong len\n");
+    return -1;
+  }
 
-####   for (i = (int) addr; i < ((int) addr + (len) *PGSIZE); i+= PGSIZE){</br>
-####     // Getting the address of the PTE in the current process's page table (pgdir)</br>
-####     // that corresponds to virtual address (i)</br>
-####     pte = walkpgdir(curproc->pgdir,(void*) i, 0);</br>
-####     if(pte && ((*pte & PTE_U) != 0) && ((*pte & PTE_P) != 0) ){</br>
-####       *pte = (*pte) & (~PTE_W) ; //Clearing the write bit </br>
-####       cprintf("\nPTE : 0x%p\n", pte);</br>
-####     } else {</br>
-####       cprintf("\n error happend");</br>
-####       return -1;</br>
-####     }</br>
-####   }</br>
-####   //Reloading the Control register 3 with the address of page directory</br> 
-####   //to flush TLB</br>
-####   lcr3(V2P(curproc->pgdir));</br>  
-#### return 0;</br>
-#### }</br>
+  //Check if addr is not page aligned
+  if((int)(((int) addr) % PGSIZE )  != 0){
+    cprintf("\nwrong addr %p\n", addr);
+    return -1;
+  }  
+  //loop for each page
+  pte_t *pte;
+  int i;
 
+  for (i = (int) addr; i < ((int) addr + (len) *PGSIZE); i+= PGSIZE){
+    // Getting the address of the PTE in the current process's page table (pgdir)
+    // that corresponds to virtual address (i)
+    pte = walkpgdir(curproc->pgdir,(void*) i, 0);
+    if(pte && ((*pte & PTE_U) != 0) && ((*pte & PTE_P) != 0) ){
+      *pte = (*pte) & (~PTE_W) ; //Clearing the write bit 
+      cprintf("\nPTE : 0x%p\n", pte);
+    } else {
+      cprintf("\n error happend");
+      return -1;
+    }
+  }
+  //Reloading the Control register 3 with the address of page directory 
+  //to flush TLB
+  lcr3(V2P(curproc->pgdir));  
+return 0;
+}
+```
 ####  _________________________________________________________
+```
+//mprotect system call makes page table entries both readable and writable
+int
+munprotect(void *addr, int len){
+  struct proc *curproc = myproc();
 
-#### //munprotect system call makes page table entries both readable and writable</br>
-#### int</br>
-#### munprotect(void *addr, int len){</br>
-####   struct proc *curproc = myproc();</br>
-####   //Check if addr points to a region that is not currently a part of the address space</br>
-####   if(len <= 0 || (int)addr+len*PGSIZE>curproc->sz){</br>
-####     cprintf("\nwrong len\n");</br>
-####     return -1;</br>
-####   }</br>
+  //Check if addr points to a region that is not currently a part of the address space
+  if(len <= 0 || (int)addr+len*PGSIZE>curproc->sz){
+    cprintf("\nwrong len\n");
+    return -1;
+  }
 
-####   //Check if addr is not page aligned</br>
-####   if((int)(((int) addr) % PGSIZE )  != 0){</br>
-####     cprintf("\nwrong addr %p\n", addr);</br>
-####     return -1;</br>
-####   }</br>
+  //Check if addr is not page aligned
+  if((int)(((int) addr) % PGSIZE )  != 0){
+    cprintf("\nwrong addr %p\n", addr);
+    return -1;
+  }
 
-####  //loop for each page</br>
-####   pte_t *pte;</br>
-####   int i;</br>
-####   for (i = (int) addr; i < ((int) addr + (len) *PGSIZE); i+= PGSIZE){</br>
-####     // Getting the address of the PTE in the current process's page table (pgdir)</br>
-####     // that corresponds to virtual address (i)</br>
-####     pte = walkpgdir(curproc->pgdir,(void*) i, 0);</br>
-####     if(pte && ((*pte & PTE_U) != 0) && ((*pte & PTE_P) != 0) ){</br>
-####       *pte = (*pte) | (PTE_W) ; //Setting the write bit </br>
-####       cprintf("\nPTE : 0x%p\n", pte);</br>
-####     } else {</br>
-####       return -1;</br>
-####     }</br>
-####   }</br>
-####   //Reloading the Control register 3 with the address of page directory </br>
-####   //to flush TLB</br>
-####   lcr3(V2P(curproc->pgdir));</br>
+  //loop for each page
+  pte_t *pte;
+  int i;
+  for (i = (int) addr; i < ((int) addr + (len) *PGSIZE); i+= PGSIZE){
+    // Getting the address of the PTE in the current process's page table (pgdir)
+    // that corresponds to virtual address (i)
+    pte = walkpgdir(curproc->pgdir,(void*) i, 0);
+    if(pte && ((*pte & PTE_U) != 0) && ((*pte & PTE_P) != 0) ){
+      *pte = (*pte) | (PTE_W) ; //Setting the write bit 
+      cprintf("\nPTE : 0x%p\n", pte);
+    } else {
+      return -1;
+    }
+  }
+  //Reloading the Control register 3 with the address of page directory 
+  //to flush TLB
+  lcr3(V2P(curproc->pgdir));
   
-####   return 0;</br>
-#### }</br>
-
-
+  return 0;
+}
+```
 ## The explanation of these functions:</br>
 • first we create a pointer to point to the current process (curproc)</br>
 • then check if the length of pages we want to change its protection bits is less than zero or if there is some address we want to access but it is greater than the size of the whole process the call will return -1 indecating that there is some error</br>
