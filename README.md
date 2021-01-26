@@ -100,8 +100,14 @@ In this project, you'll be adding kernel threads support to xv6, to achieve this
 
 **Tools**
 
+- [Visual studio code](https://code.visualstudio.com/Download)
+- [QEMU machine emulator](https://www.qemu.org/)
+- Ubuntu operating system
 
 **Resources**
+
+- [Operating Systems: Three Easy Pieces (ostep-projects)](https://github.com/remzi-arpacidusseau/ostep-projects)
+- [Tim Richards's repository](https://github.com/umass-cs-377/project-ticketlocks)
 
 
 
@@ -113,7 +119,7 @@ Implementations of xv6 Lottery Scheduler by:
 
 Implementations of xv6 Virtual Memory by:
 - [Muhammad Adel Sharkawy](https://github.com/mohamed-el-sharkawy)
-- [Youseef Magdy](https://github.com/youssefmagdy1)
+- [Youssef Magdy](https://github.com/youssefmagdy1)
 
 Implementations of xv6 Kernel Threads by:
 - [Muhammad Mohie](https://github.com/muhammadmohie98)
