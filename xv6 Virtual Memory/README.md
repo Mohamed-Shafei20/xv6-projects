@@ -80,6 +80,7 @@ it is all about trying to access null pointer (trying to access the page number 
 but because we make the program address space begins from the second page</br> 
 then it will not find the page and then it will trap (page fault)</br> 
 but because it is not exsit it will cause an error</br>
+![alt tag](https://user-images.githubusercontent.com/47748922/105889846-4dc1e880-6017-11eb-8e68-0db175b78093.png)
 ___________________________________________________________________________________________________________________________________________
 # Read only code</br> 
 The main problem here is that in xv6 code is marked as readable and writeable so any program can overwrite its code</br>
@@ -224,3 +225,4 @@ but we do not make munprotect in it</br>
 then we try to access this pointer again</br>
 but because it is read only segment now </br>
 so it will trap and exit</br>
+![alt tag](https://user-images.githubusercontent.com/47748922/105889838-4bf82500-6017-11eb-996d-817a6e769b57.png)
