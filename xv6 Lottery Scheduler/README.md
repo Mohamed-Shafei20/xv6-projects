@@ -139,14 +139,14 @@ scheduler(void)
 ```
 int 
 settickets(int tickets){
-
-  struct proc *proc = myproc(); //Disable interrupts so that we are not rescheduled; while reading proc from the cpu structure
-  if(tickets<0)
-       return -1;
-  acquire(&ptable.lock);
-  ptable.proc[proc-ptable.proc].tickets = tickets;
-  release(&ptable.lock);
+  struct proc *proc = myproc();  // You have to query the current process
+  if(tickets<0) return -1;  // skip -ve one's
+  
+ /*Before and after accessing the process table (ptable), acquire ptable.lock and afterwards you should    	            release it, This will keep you from running into problems if a process is removed while you are iterating through the    process table.*/
  
+  acquire(&ptable.lock); // for concurrency issues
+  ptable.proc[proc-ptable.proc].tickets = tickets; // assign current process with no of tickets , intially each has 1
+  release(&ptable.lock);
   return 0;
 }
 ```
@@ -169,6 +169,7 @@ struct pstat {
 ```
 2. **Add System call--getpinfo(struct pstate)**
 ```
+// iterate through the process list ptable, skipping over UNUSED processes.
 int
 getpinfo(struct pstat* ps) {
   int i = 0;
