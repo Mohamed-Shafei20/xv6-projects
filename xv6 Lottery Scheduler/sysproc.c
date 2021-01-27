@@ -92,7 +92,8 @@ sys_uptime(void)
 }
 
 
-
+ //You can use argint to retrieve the integer argument to your system call.
+ //(Making sys_settickets take an argument will not work.)
 
 int
 sys_settickets(void) {
