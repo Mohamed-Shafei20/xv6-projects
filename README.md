@@ -68,6 +68,8 @@ This is our Operating systems course project we were assigned by our lecturer to
   choose a process to run based on the number of tickets it is assigned;
 
 - `int getpinfo(struct pstat *).`This routine returns some information about all running processes, including how many times each has been chosen to run and the process ID of each.
+![68747470733a2f2f696d6167652e70726e747363722e636f6d2f696d6167652f61416e355a536157546275545a495249534c6e6146772e706e67](https://user-images.githubusercontent.com/47748059/105966094-e0509f00-608c-11eb-87c7-0cbc30ee6053.png)
+
 
  ## 2. xv6 Virtual Memory
  
